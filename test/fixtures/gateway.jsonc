@@ -1,0 +1,19 @@
+{
+  "name": "lightweight-proxy-example-gateway",
+  "main": "./gateway.ts",
+  "compatibility_date": "2026-10-28",
+  "services": [
+    {
+      "binding": "WEB",
+      "service": "lightweight-proxy-example-web"
+    },
+    {
+      "binding": "API",
+      "service": "lightweight-proxy-example-api"
+    },
+    {
+      "binding": "INGEST",
+      "service": "lightweight-proxy-example-api"
+    }
+  ]
+}

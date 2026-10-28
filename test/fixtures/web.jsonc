@@ -1,0 +1,7 @@
+{
+  "name": "lightweight-proxy-example-web",
+  "main": "../../examples/web-api/web/src/index.ts",
+  "compatibility_date": "2026-10-28",
+  "workers_dev": false,
+  "preview_urls": false
+}

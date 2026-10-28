@@ -1,0 +1,33 @@
+{
+  "name": "lightweight-proxy-cf-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm build && wrangler dev -c examples/web-api/gateway/wrangler.jsonc -c examples/web-api/web/wrangler.jsonc -c examples/web-api/api/wrangler.jsonc",
+    "build": "pnpm --filter @jc68124/lightweight-proxy-cf build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "pnpm build && pnpm test:unit && pnpm test:integration",
+    "check:bundle": "pnpm build && node scripts/check-bundles.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:integration": "node scripts/build-fixtures.mjs && vitest run --config vitest.config.ts",
+    "check:package": "pnpm build && node scripts/check-package.mjs"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.7",
+    "@cloudflare/vitest-plugin": "1.4.9",
+    "@cloudflare/workers-types": "5.20261028.1",
+    "@jc68124/lightweight-proxy-cf": "workspace:*",
+    "@types/node": "24.10.0",
+    "miniflare": "5.20261023.1-beta",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5",
+    "wrangler": "4.154.0"
+  }
+}
