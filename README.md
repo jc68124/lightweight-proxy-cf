@@ -109,6 +109,12 @@ Preserving origin helps downstream frameworks, but applications still own canoni
 
 Generated errors are plain text with `Cache-Control: no-store`. They do not expose exceptions, binding names, headers, or secrets. There is no diagnostic logging in the package. Inspect application/Cloudflare logs separately. Once a response stream has started, later stream errors propagate as interrupted streams; they cannot become a replacement 502. Failure never retries or selects a second destination.
 
+## Dev container
+
+With Docker and VS Code's Dev Containers extension installed, open this repository and select **Dev Containers: Reopen in Container**. The container provides Node 24 on Debian Bookworm, Git, and pnpm 11.7.0, runs a frozen-lockfile install and package build on creation, and uses the non-root `node` user.
+
+Run `pnpm dev` in the container terminal, then open the forwarded gateway at `http://localhost:8787`. Web/API Workers run behind its Service Bindings. The normal build, typecheck, test, and bundle commands also run inside the container. Rebuild the container after changing its Dockerfile; keep its pnpm pin aligned with `package.json`.
+
 ## Runnable example and local development
 
 Requirements: Node 24+, pinned pnpm 11.7.0. Install that pnpm version with your preferred package-manager setup, then:
