@@ -1,0 +1,8 @@
+{
+  "name": "@proxy-example/gateway",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@jc68124/lightweight-proxy-cf": "workspace:*"
+  }
+}

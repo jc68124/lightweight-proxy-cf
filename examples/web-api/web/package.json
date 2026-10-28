@@ -1,0 +1,5 @@
+{
+  "name": "@proxy-example/web",
+  "private": true,
+  "type": "module"
+}
