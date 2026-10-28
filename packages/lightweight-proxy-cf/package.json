@@ -1,6 +1,6 @@
 {
   "name": "@jc68124/lightweight-proxy-cf",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Small Service Binding reverse proxy for Cloudflare Workers",
   "type": "module",
   "sideEffects": false,
