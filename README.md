@@ -8,9 +8,8 @@ The package has no authentication: no reserved paths, sessions, OAuth, user head
 
 ## Install and use
 
-Once published:
-
 ```sh
+npm install @jc68124/lightweight-proxy-cf
 pnpm add @jc68124/lightweight-proxy-cf
 ```
 
