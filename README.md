@@ -164,8 +164,6 @@ Downstream configuration uses `workers_dev: false`, `preview_urls: false`, and n
 
 For production, attach your public hostname to the **gateway**. A Workers Custom Domain is appropriate when the gateway is the origin; Cloudflare handles its DNS/certificate provisioning. Worker routes instead intercept matching requests on a Cloudflare-proxied DNS hostname, often in front of an existing origin. DNS gets the request to Cloudflare, gateway domains/routes select the public Worker, and this package selects an internal binding. Adding a host condition here does not create DNS records or attach that hostname to the Worker.
 
-See [Schema Studio](docs/schema-studio.md) and [Test Results Dashboard](docs/test-results-dashboard.md) for consumer configurations. They do not modify those repositories.
-
 ## Verification
 
 ```sh
@@ -175,39 +173,3 @@ pnpm test
 pnpm check:bundle
 pnpm check:package
 ```
-
-Unit tests execute in workerd using Cloudflare's Vitest integration. Integration tests bundle separate gateway/web/API Workers with Wrangler and run those bundles in a single Miniflare workerd runtime using actual Service Bindings. This avoids Wrangler's local proxy translating thrown exceptions into developer diagnostic responses. Tests cover routing, spoofed forwarding headers, public HTTPS URLs, request bodies, auth headers, multiple cookies, redirects, failures, streamed uploads, SSE/HTML chunks before completion (using Accept-Encoding: identity to exclude transport compression buffering), and WebSocket upgrades/text/binary/close.
-
-`check:bundle` runs Wrangler deployment dry runs for all runnable example Workers. `check:package` packs the public package, inspects the archive, then installs it in an isolated consumer and bundles that consumer. Integration fixture bindings are test-only, with production bundles generated from their Wrangler files.
-
-See the [verification record](docs/verification.md) for results and tooling details. These are local runtime and bundle checks, not live deployment checks. They cannot establish DNS/TLS setup, account permissions, deployed ingress isolation, GitHub OAuth, actual Next.js/OpenNext rendering, or npm publication. Framework-specific application integration remains the consuming repository's responsibility.
-
-## Versioning and npm releases
-
-Changesets manages package versions and changelogs. For user-visible changes, run `pnpm changeset` and commit the generated markdown file with the implementation. The initial changeset bumps 0.0.0 to 0.1.0.
-
-The release workflow runs checks on master and creates/updates a **Version Packages** PR. Merging that PR enables publication of unpublished versions on the next release run **when** repository variable `NPM_PUBLISH_ENABLED` is `true`. It uses `pnpm release` (build + `changeset publish`). Private workspace/example packages are not published. The release job is serialized and never runs on pull requests.
-
-Setup:
-
-1. Enable GitHub Actions to create pull requests in this repository.
-2. For a new npm package, first publish a reviewed release manually with `npm login` and `pnpm release`, from the versioned master branch. Alternatively bootstrap an explicitly reviewed 0.0.0 package before the initial release. Do not publish unversioned working-tree changes.
-3. In npm package Settings → Trusted Publisher, authorize GitHub owner `jc68124`, repository `lightweight-proxy-cf`, workflow `release.yml`, and allow direct `npm publish`. Changesets invokes the pinned pnpm native publishing flow with OIDC (`id-token: write`) on Node 24.22.1; no persistent NPM_TOKEN is needed.
-4. Set repository Actions variable `NPM_PUBLISH_ENABLED=true` once npm trust is configured. For a manually published version, Changesets will skip publishing it again.
-
-Publishing is disabled by default until that variable is set. The workflow does not deploy Workers. Local version/publish commands are `pnpm version-packages` and `pnpm release`; neither is part of normal tests. No release has been published as part of creating this repository.
-
-## Deliberate limitations
-
-No auth, arbitrary URL targets, host wildcard language, path rewrites, CORS middleware, rate limits, cookie-domain rewriting, redirect rewriting, retries, cache policy, or response transformations. Platform limits and downstream behaviour still apply. Use a Cloudflare-compatible Worker deployment for Next.js (for example OpenNext); this package does not run Node servers or convert framework output.
-
-## References
-
-- [HTTP Service Bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/http/)
-- [Multi-Worker development and deployment order](https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/)
-- [Workers request/redirect behaviour](https://developers.cloudflare.com/workers/runtime-apis/request/)
-- [Workers Headers and Set-Cookie](https://developers.cloudflare.com/workers/runtime-apis/headers/)
-- [Workers WebSockets](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
-- [Workers routing](https://developers.cloudflare.com/workers/configuration/routing/)
-- [Workers testing](https://developers.cloudflare.com/workers/testing/)
-- [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/)
