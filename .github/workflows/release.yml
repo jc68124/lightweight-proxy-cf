@@ -1,0 +1,42 @@
+name: Release
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.22.1
+          package-manager-cache: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm check:bundle
+      - run: pnpm check:package
+      # Prevent the action from inserting an undefined NPM_TOKEN auth entry; npm uses OIDC.
+      - run: echo 'registry=https://registry.npmjs.org/' > ~/.npmrc
+      - name: Version packages or publish reviewed releases
+        uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0, compatible with CLI v2
+        with:
+          version: pnpm version-packages
+          publish: ${{ vars.NPM_PUBLISH_ENABLED == 'true' && 'pnpm release' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
